@@ -1,6 +1,7 @@
 from mongoengine import connect
 import configparser
-
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -12,4 +13,10 @@ domain = config.get('DB', 'domain')
 
 # connect to cluster on AtlasDB with connection string
 
-connect(host=f"""mongodb+srv://{mongo_user}:{mongodb_pass}@{domain}/{db_name}?retryWrites=true&w=majority""", ssl=True)
+uri = f'mongodb+srv://{mongo_user}:{mongodb_pass}@{domain}/{db_name}?retryWrites=true&w=majority'
+
+connect(host=uri, ssl=True)
+
+client = MongoClient(uri, server_api=ServerApi("1"))
+
+mongo_db = client.db_name
